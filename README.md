@@ -20,3 +20,6 @@ The user and support agents will interact with the ticketing system as follows:
 * React + TypeScript
 * Fast API
 * MongoDB
+
+## Frontend Mockup
+https://www.figma.com/design/AMUk4y5viQrgeX5TSGQKbf/CPS714-Final-Project?t=qk0C50AHR3TA4poS-1
