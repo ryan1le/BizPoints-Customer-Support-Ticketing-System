@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
-from models import TicketModel, TicketResponseModel, TicketStatus, ticket_collection, document_to_ticket
+from ..models import TicketModel, TicketResponseModel, TicketStatus, ticket_collection, document_to_ticket
 import uuid
 
 # Router setup
@@ -52,6 +52,15 @@ async def update_ticket(ticket_id: str, ticket: TicketModel):
 @router.put("/{ticket_id}/status", response_model=TicketResponseModel)
 async def update_ticket_status(ticket_id: str, status: TicketStatus):
     result = await ticket_collection.update_one({"ticketID": ticket_id}, {"$set": {"ticketStatus": status}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    updated_ticket = await ticket_collection.find_one({"ticketID": ticket_id})
+    return await document_to_ticket(updated_ticket)
+
+@router.put("/{ticket_id}/assign", response_model=TicketResponseModel)
+async def assign_ticket_admin(ticket_id: str, assigned_admin: str):
+    result = await ticket_collection.update_one({"ticketID": ticket_id}, {"$set": {"assignedAdmin": assigned_admin}})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Ticket not found")
     

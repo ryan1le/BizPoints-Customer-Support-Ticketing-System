@@ -27,12 +27,16 @@ class TicketModel(BaseModel):
     clientID: str  # Client's unique ID
     clientFullName: str  # Full name of the client
     clientEmail: str  # Email address of the client
+    ticketDate: str # Date of the ticket
     ticketSubject: str  # Subject of the ticket
     ticketDescription: str  # Description of the issue
     ticketStatus: TicketStatus = TicketStatus.OPEN  # Status of the ticket
+    assignedAdmin: Optional[str] = None  # Admin assigned to the ticket
     adminResponse: Optional[str] = None  # Admin response to the ticket
     actions: Optional[str] = None  # Actions taken on the ticket
     ticketType: TicketType  # Type of the ticket
+    
+
 
     class Config:
         allow_population_by_field_name = True
@@ -56,9 +60,11 @@ class TicketResponseModel(BaseModel):
     clientID: str
     clientFullName: str
     clientEmail: str
+    ticketDate: str
     ticketSubject: str
     ticketDescription: str
     ticketStatus: TicketStatus
+    assignedAdmin: Optional[str] = None
     adminResponse: Optional[str] = None
     actions: Optional[str] = None
     ticketType: TicketType
@@ -87,9 +93,11 @@ async def document_to_ticket(doc: dict) -> TicketResponseModel:
         clientID=doc.get("clientID", ""),
         clientFullName=doc.get("clientFullName", ""),
         clientEmail=doc.get("clientEmail", ""),
+        ticketDate=doc.get("ticketDate", ""),
         ticketSubject=doc.get("ticketSubject", ""),
         ticketDescription=doc.get("ticketDescription", ""),
         ticketStatus=doc.get("ticketStatus", TicketStatus.OPEN),
+        assignedAdmin=doc.get("assignedAdmin"),
         adminResponse=doc.get("adminResponse"),
         actions=doc.get("actions"),
         ticketType=doc.get("ticketType", TicketType.TECHNICAL),

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import tickets
+from .routes import tickets
 
 app = FastAPI()
 
