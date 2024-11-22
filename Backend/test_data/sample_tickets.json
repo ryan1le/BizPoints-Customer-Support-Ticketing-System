@@ -1,0 +1,38 @@
+[
+    {
+        "_id": {"$oid": "650f66e3f1c8e2f0123a4a2c"},
+        "clientID": {"$oid": "650f66e3f1c8e2f0123a4a2b"},
+        "clientFullName": "John Doe",
+        "clientEmail": "john.doe@example.com",
+        "ticketSubject": "Login Issue",
+        "ticketDescription": "Unable to login to the portal with correct credentials.",
+        "ticketStatus": "Open",
+        "adminResponse": "Pending review.",
+        "actions": "Reset password and notify client.",
+        "ticketType": "Technical"
+    },
+    {
+        "_id": {"$oid": "650f66e3f1c8e2f0123a4a2d"},
+        "clientID": {"$oid": "650f66e3f1c8e2f0123a4a2e"},
+        "clientFullName": "Jane Smith",
+        "clientEmail": "jane.smith@example.com",
+        "ticketSubject": "Payment Failure",
+        "ticketDescription": "Received an error during payment processing.",
+        "ticketStatus": "In Progress",
+        "adminResponse": "We are currently investigating the issue.",
+        "actions": "Check payment gateway logs and update client.",
+        "ticketType": "Reward"
+    },
+    {
+        "_id": {"$oid": "650f66e3f1c8e2f0123a4a2f"},
+        "clientID": {"$oid": "650f66e3f1c8e2f0123a4a30"},
+        "clientFullName": "Alice Brown",
+        "clientEmail": "alice.brown@example.com",
+        "ticketSubject": "Account Suspension",
+        "ticketDescription": "Account suspended without reason after update.",
+        "ticketStatus": "Closed",
+        "adminResponse": "Account has been restored.",
+        "actions": "Unsuspend account and notify client.",
+        "ticketType": "Technical"
+    }
+]
