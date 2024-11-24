@@ -25,6 +25,13 @@ async def get_ticket(ticket_id: str):
         raise HTTPException(status_code=404, detail="Ticket not found")
     return await document_to_ticket(ticket)
 
+@router.get("/{user_id}", response_model=TicketResponseModel)
+async def get_user_ticket(user_id: str):
+    ticket = await ticket_collection.find({"clientEmail": user_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Tickets not found")
+    return await document_to_ticket(ticket)
+
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=TicketResponseModel)
 async def create_ticket(ticket: TicketModel):
     # Set ticketID to a unique UUID
