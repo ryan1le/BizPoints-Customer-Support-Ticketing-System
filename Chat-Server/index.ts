@@ -3,9 +3,9 @@ const http = require("http");
 
 type messaqgeType = {
     type: string;
-    sentid: number | null;
+    sentid: string | null;
     // name: string;
-    desid: number | null;
+    desid: string | null;
     timestamp: string;
     message: string | number[];
 };
@@ -29,54 +29,47 @@ wsServer.on('connection', function(connection) {
         const message: messaqgeType = JSON.parse(data)
 
         if (message.type === 'initial-connect') {
-            const sendMessage: messaqgeType = {type: 'open-connections', sentid: null, desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
 
             if (message.message === 'admin') {
                 admins.set(message.sentid, connection)
-            
+                
+                const sendMessage: messaqgeType = {type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
                 connection.send(JSON.stringify(sendMessage))
                 
             }
             else if (message.message === 'client') {
                 clients.set(message.sentid, connection)
+                const sendMessage: messaqgeType = {type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
                 admins.forEach((connection) => {
-                    if (connection.readyState === WebSocketServer.OPEN) {
-                        connection.send(JSON.stringify(sendMessage))
-                    }
+                    connection.send(JSON.stringify(sendMessage))
                 })
             }
             console.log(`User identified as ${message.message}`)
         }
         else if (message.type === 'admin-connect') {
-            const client = clients[message.desid]
+            const client = clients.get(message.desid)
 
-            if (client.readyState === WebSocketServer.OPEN) {
-                client.send(JSON.stringify(message))
-                console.log(`Admin: ${message.sentid} connected with Client: ${message.desid}`)
-            }
+            client.send(JSON.stringify(message))
+            console.log(`Admin: ${message.sentid} connected with Client: ${message.desid}`)
         }
         else if (message.type === 'message') {
             if (clients.has(message.desid)){
-                const client = clients[message.desid]
+                const client = clients.get(message.desid)
 
-                if (client.readyState === WebSocketServer.OPEN) {
-                    client.send(JSON.stringify(message))
-                    console.log(`Admin: ${message.sentid} sent message to Client: ${message.desid}`)
-                }
+                client.send(JSON.stringify(message))
+                console.log(`Admin: ${message.sentid} sent message to Client: ${message.desid}`)
             }
             else if (admins.has(message.desid)){
-                const admin = admins[message.desid]
-
-                if (admin.readyState === WebSocketServer.OPEN) {
-                    admin.send(JSON.stringify(message))
-                    console.log(`Client: ${message.sentid} sent message to Admin: ${message.desid}`)
-                }
+                const admin = admins.get(message.desid)
+                
+                admin.send(JSON.stringify(message))
+                console.log(`Client: ${message.sentid} sent message to Admin: ${message.desid}`)
             }
         }
     })
 });
 
 function getActiveClient() {
-    const connectedClient = [...clients.keys()]
+    const connectedClient = Array.from(clients.keys())
     return connectedClient
 }
