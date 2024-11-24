@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import Messages from "./Messages";
 
 export const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false); // Tracks if the chat is open
@@ -19,7 +20,7 @@ export const ChatButton = () => {
   // Handle message send
   const handleSendMessage = () => {
     if (message.trim() !== "") {
-      setMessages([...messages, message]); // Add the new message to the list
+      setMessages([message, ...messages]); // Add the new message to the list
       setMessage(""); // Clear the input
     }
   };
@@ -51,18 +52,7 @@ export const ChatButton = () => {
           </div>
           <div className="p-4 space-y-4">
             {/* Chat Messages */}
-            <div className="h-64 overflow-y-auto border rounded p-2 bg-gray-100">
-              {messages.length === 0 ? (
-                <p className="text-sm text-gray-700">No messages yet...</p>
-              ) : (
-                messages.map((msg, index) => (
-                  <div key={index} className="text-sm text-gray-700 mb-2">
-                    {msg}
-                  </div>
-                ))
-              )}
-            </div>
-
+            <Messages messages={messages}/>
             {/* Message Input */}
             <div className="flex items-center space-x-2">
               <input

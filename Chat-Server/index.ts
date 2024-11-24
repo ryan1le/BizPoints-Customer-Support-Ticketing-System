@@ -7,7 +7,7 @@ type messaqgeType = {
     // name: string;
     desid: string | null;
     timestamp: string;
-    message: string | number[];
+    message: string | string[];
 };
 
 const webSocketsServerPort = 8000;
@@ -33,16 +33,18 @@ wsServer.on('connection', function(connection) {
             if (message.message === 'admin') {
                 admins.set(message.sentid, connection)
                 
-                const sendMessage: messaqgeType = {type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
+                const sendMessage: messaqgeType = {type: 'open-connections', sentid: 's-1', desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
                 connection.send(JSON.stringify(sendMessage))
                 
             }
             else if (message.message === 'client') {
                 clients.set(message.sentid, connection)
-                const sendMessage: messaqgeType = {type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
-                admins.forEach((connection) => {
-                    connection.send(JSON.stringify(sendMessage))
+                const sendMessage: messaqgeType = {type: 'open-connections', sentid: 's-1', desid: null, timestamp: new Date().toISOString(), message: getActiveClient()}
+                admins.forEach((admin) => {
+                    admin.send(JSON.stringify(sendMessage))
                 })
+
+                connection.send(JSON.stringify({type: 'server-response', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: '200'}))
             }
             console.log(`User identified as ${message.message}`)
         }
@@ -64,6 +66,14 @@ wsServer.on('connection', function(connection) {
                 
                 admin.send(JSON.stringify(message))
                 console.log(`Client: ${message.sentid} sent message to Admin: ${message.desid}`)
+            }
+        }
+        else if (message.type === 'connection-closed') {
+            if (clients.has(message.desid)){
+                const client = clients.get(message.desid)
+
+                client.send(JSON.stringify(message))
+                console.log(`Admin: ${message.sentid} closed connection to Client: ${message.desid}`)
             }
         }
     })

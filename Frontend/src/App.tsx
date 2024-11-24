@@ -1,17 +1,17 @@
-import { ChatButton } from "./components/ChatButton";
-import { ActiveTickets, InactiveTickets } from "./components/HomePage";
-import { Navbar } from "./components/Navbar";
-import NewTicket from "./components/NewTicket";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import AdminChat from "./pages/AdminChat";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
-    <>
-      <Navbar />
-      <ActiveTickets />
-      <InactiveTickets />
-      <ChatButton />
-      <NewTicket resetForm={() => { /* implement reset form logic here */ }} />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin-chat" element={<AdminChat/>} />
+      </Routes>
+      <Toaster />
+    </BrowserRouter>
   );
 }
 

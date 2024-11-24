@@ -21,9 +21,10 @@ wsServer.on('connection', function (connection) {
             else if (message.message === 'client') {
                 clients.set(message.sentid, connection);
                 var sendMessage_1 = { type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient() };
-                admins.forEach(function (connection) {
-                    connection.send(JSON.stringify(sendMessage_1));
+                admins.forEach(function (admin) {
+                    admin.send(JSON.stringify(sendMessage_1));
                 });
+                connection.send(JSON.stringify({ type: 'server-response', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: '200' }));
             }
             console.log("User identified as ".concat(message.message));
         }
