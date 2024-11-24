@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 interface FormData {
   ticketName: string;
   description: string;
+  ticketType: string;
 }
 
 interface NewTicketProps {
@@ -65,6 +66,29 @@ const NewTicket = ({ resetForm, isModal = false }: NewTicketProps) => {
           />
           {errors.description && (
             <span className="text-sm text-red-500">{errors.description.message}</span>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Ticket Type</label>
+          <Controller
+            name="ticketType"
+            control={control}
+            rules={{ required: "Ticket type is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className="w-full border border-gray-300 rounded-md px-2 py-1"
+              >
+                <option value="">Select ticket type</option>
+                <option value="bug">Bug</option>
+                <option value="feature">Feature Request</option>
+                <option value="support">Support</option>
+              </select>
+            )}
+          />
+          {errors.ticketType && (
+            <span className="text-sm text-red-500">{errors.ticketType.message}</span>
           )}
         </div>
 
