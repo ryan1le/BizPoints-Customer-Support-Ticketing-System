@@ -4,10 +4,16 @@ import { useState } from "react";
 import { LogoIcon } from "./Icons";
 import NewTicket from "./NewTicket";
 import { buttonVariants } from "./ui/button";
+import { fakedata } from "@/pages/Home";
 
 interface RouteProps {
   href: string;
   label: string;
+}
+
+interface navbarprops {
+  setTicket: (fakedata: fakedata[]) => void;
+  fakedata: fakedata[]
 }
 
 const routeList: RouteProps[] = [
@@ -34,7 +40,7 @@ const Modal = ({ isOpen, onClose, children }: { isOpen: boolean, onClose: () => 
   );
 };
 
-export const Navbar = () => {
+export const Navbar = ({ setTicket, fakedata }: navbarprops) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleNewTicketClick = () => {
@@ -90,7 +96,7 @@ export const Navbar = () => {
 
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <NewTicket resetForm={closeModal} isModal={true} />
+          <NewTicket resetForm={closeModal} isModal={true} setTicket={setTicket} fakedata={fakedata}/>
         </Modal>
       )}
     </>

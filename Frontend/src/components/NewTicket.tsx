@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { fakedata } from "@/pages/Home";
 import { Controller, useForm } from "react-hook-form";
 
 interface FormData {
@@ -12,9 +13,11 @@ interface FormData {
 interface NewTicketProps {
   resetForm: () => void;
   isModal?: boolean; // Add new prop to check if it's being rendered in a modal
+  setTicket: (fakedata: fakedata[]) => void;
+  fakedata: fakedata[]
 }
 
-const NewTicket = ({ resetForm, isModal = false }: NewTicketProps) => {
+const NewTicket = ({ resetForm, isModal = false, setTicket, fakedata }: NewTicketProps) => {
   // If not in modal, don't render anything
   if (!isModal) return null;
 
@@ -22,6 +25,8 @@ const NewTicket = ({ resetForm, isModal = false }: NewTicketProps) => {
 
   const onSubmit = (data: FormData) => {
     console.log('Form Submitted:', data);
+    const newdata: fakedata = {id: 48475, name: data.ticketName, type: data.ticketType, details: data.description, date: "2024-11-24", status: "Open"}
+    setTicket([newdata, ...fakedata])
     handleClose();
   };
 
@@ -81,9 +86,8 @@ const NewTicket = ({ resetForm, isModal = false }: NewTicketProps) => {
                 className="w-full border border-gray-300 rounded-md px-2 py-1"
               >
                 <option value="">Select ticket type</option>
-                <option value="bug">Bug</option>
-                <option value="feature">Feature Request</option>
-                <option value="support">Support</option>
+                <option value="Reward">Reward</option>
+                <option value="Technical">Technical</option>
               </select>
             )}
           />

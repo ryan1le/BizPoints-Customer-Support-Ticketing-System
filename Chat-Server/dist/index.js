@@ -15,18 +15,18 @@ wsServer.on('connection', function (connection) {
         if (message.type === 'initial-connect') {
             if (message.message === 'admin') {
                 admins.set(message.sentid, connection);
-                var sendMessage = { type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient() };
+                var sendMessage = { type: 'open-connections', sentid: 's-1', desid: null, timestamp: new Date().toISOString(), message: getActiveClient() };
                 connection.send(JSON.stringify(sendMessage));
             }
             else if (message.message === 'client') {
                 clients.set(message.sentid, connection);
-                var sendMessage_1 = { type: 'open-connections', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: getActiveClient() };
+                var sendMessage_1 = { type: 'open-connections', sentid: 's-1', desid: null, timestamp: new Date().toISOString(), message: getActiveClient() };
                 admins.forEach(function (admin) {
                     admin.send(JSON.stringify(sendMessage_1));
                 });
                 connection.send(JSON.stringify({ type: 'server-response', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: '200' }));
             }
-            console.log("User identified as ".concat(message.message));
+            console.log("User identified as ".concat(message.message, ": ").concat(message.sentid));
         }
         else if (message.type === 'admin-connect') {
             var client = clients.get(message.desid);
@@ -43,6 +43,14 @@ wsServer.on('connection', function (connection) {
                 var admin = admins.get(message.desid);
                 admin.send(JSON.stringify(message));
                 console.log("Client: ".concat(message.sentid, " sent message to Admin: ").concat(message.desid));
+            }
+        }
+        else if (message.type === 'connection-closed') {
+            if (clients.has(message.desid)) {
+                var client = clients.get(message.desid);
+                client.send(JSON.stringify(message));
+                console.log("Admin: ".concat(message.sentid, " closed connection to Client: ").concat(message.desid));
+                clients.delete(message.desid);
             }
         }
     });

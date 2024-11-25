@@ -46,7 +46,7 @@ wsServer.on('connection', function(connection) {
 
                 connection.send(JSON.stringify({type: 'server-response', sentid: message.sentid, desid: null, timestamp: new Date().toISOString(), message: '200'}))
             }
-            console.log(`User identified as ${message.message}`)
+            console.log(`User identified as ${message.message}: ${message.sentid}`)
         }
         else if (message.type === 'admin-connect') {
             const client = clients.get(message.desid)
@@ -74,6 +74,7 @@ wsServer.on('connection', function(connection) {
 
                 client.send(JSON.stringify(message))
                 console.log(`Admin: ${message.sentid} closed connection to Client: ${message.desid}`)
+                clients.delete(message.desid)
             }
         }
     })

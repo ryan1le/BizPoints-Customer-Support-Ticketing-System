@@ -29,7 +29,7 @@ export type messageType = {
 
   
 function LiveChat() {
-    const unique_id = uuid();
+  const [unique_id, setId] = useState<string>(uuid())
 
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [messages, setMessages] = useState<messageType[]>([]);
@@ -69,18 +69,19 @@ function LiveChat() {
               setSocket(null)
             }
           }
-          else if (recievedMessage.type === 'admin-connect') {
+          else if (recievedMessage.type === 'admin-connect' && recievedMessage.message === '200') {
             setAdminConnected(recievedMessage.sentid)
+            console.log(recievedMessage.sentid)
           }
           else if (recievedMessage.type === 'message') {
-            if (recievedMessage.desid === unique_id && recievedMessage.sentid === adminConnected) {
-              setMessages([recievedMessage, ...messages]);
+            if (recievedMessage.desid === unique_id) {
+              setMessages((prev) => [recievedMessage, ...prev]);
             } else {
               console.log("Message not intended for User")
             }
           }
-          else if (recievedMessage.type === 'connection-closed') {
-            if (recievedMessage.desid === unique_id && recievedMessage.sentid === adminConnected) {
+          else if (recievedMessage.type === 'connection-closed' && recievedMessage.message === '200') {
+            if (recievedMessage.desid === unique_id ) {
               setAdminConnected(null)
               setIsConnected(false)
               setConnectionErrorMessage("The agent has closed the live chat")
@@ -109,6 +110,7 @@ function LiveChat() {
     const handleSendMessage = () => {
       if (message.trim() !== "") {
         if (adminConnected && socket && socket.readyState === WebSocket.OPEN) {
+          console.log(adminConnected)
           const sendMessage: messageType = {type: 'message', sentid: unique_id, desid: adminConnected, timestamp: new Date().toISOString(), message: message}
           socket.send(JSON.stringify(sendMessage));
           setMessages([sendMessage, ...messages]); // Add the new message to the list
@@ -121,7 +123,7 @@ function LiveChat() {
     };
 
     return (
-      <div className="fixed bottom-16 flex justify-end w-full pr-5">
+      <div className="fixed bottom-4 flex justify-end w-full pr-5">
         <Sheet open={isOpen} onOpenChange={() => setIsOpen(true)}>
           <SheetTrigger asChild><Button size="icon" className="bg-[#305252] h-12 w-12 rounded-[30px] shadow-lg"><MdMessage size={"25"}/></Button></SheetTrigger>
           <SheetContent className="space-y-4">
@@ -131,8 +133,8 @@ function LiveChat() {
                 <SheetTitle className="text-white">Support Chat</SheetTitle>  
               </div>
             </SheetHeader>
-            {isConnected ? <Messages messages={messages} agentId={adminConnected!}/> : 
-            <div className="h-[600px]">
+            {isConnected ? <Messages messages={messages} id={adminConnected!} size="h-[550px]"/> : 
+            <div className="h-[550px]">
               <div className="h-full w-full flex flex-col items-center justify-center space-y-5">
                 <h2>Connect with Support Agent</h2>
                 <Button size='sm' className="bg-[#305252]" onClick={establishConnection}>Connect</Button>
