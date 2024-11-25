@@ -1,7 +1,8 @@
 import { ActiveTickets, InactiveTickets } from "@/components/HomePage";
 import LiveChat from "@/components/LiveChat";
 import { Navbar } from "@/components/Navbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export type fakedata = {
   id: number;
@@ -11,6 +12,21 @@ export type fakedata = {
   date: string;
   status: string;
 }
+
+export type Ticket = {
+  ticketID: string;
+  clientID: string;
+  clientFullName: string;
+  clientEmail: string;
+  ticketDate: string; 
+  ticketSubject: string;
+  ticketDescription: string;
+  ticketStatus: "Open" | "Closed" | "In Progress";
+  assignedAdmin: string;
+  adminResponse: string;
+  actions: string;
+  ticketType: "Reward" | "Technical";
+};
 
 const fakedataActive: fakedata[] = [{
   id: 43321,
@@ -81,8 +97,47 @@ const fakedataInactive: fakedata[] = [
 ];
 
 function Home() {
-  const [active, setActive] = useState<fakedata[]>(fakedataActive)
-  const [inactive, setInactive] = useState<fakedata[]>(fakedataInactive)
+  const [active, setActive] = useState<Ticket[] >([])
+  const [inactive, setInactive] = useState<Ticket[] >([])
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Define the async function inside useEffect
+    const fetchData = async () => { 
+      try {
+        setLoading(true);
+        const response = await axios.get(`https://localhost:8080/tickets/${"ryan.le@yorku.com"}`); //Fetch all tickets relating to useremail since that is the id key for the User Profile team
+        const data: Ticket[] = response.data
+
+        const activeTicket: Ticket[] = []
+        const inactiveTicket: Ticket[] = []
+
+        data.map((item) => {
+          if (item.ticketStatus === "Closed") {
+            inactiveTicket.push(item)
+          }
+          else {
+            activeTicket.push(item)
+          }
+        })
+        setActive([...activeTicket])
+        setInactive([...inactiveTicket])
+        
+      } catch (err) {
+        setError(err); // Update state with error message if any
+        console.log(err)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData(); // Call the function
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  
   return (
     <>
       <Navbar fakedata={active} setTicket={setActive}/>

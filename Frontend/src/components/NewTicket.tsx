@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { fakedata } from "@/pages/Home";
+import { fakedata, Ticket } from "@/pages/Home";
+import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 
 interface FormData {
@@ -23,10 +24,19 @@ const NewTicket = ({ resetForm, isModal = false, setTicket, fakedata }: NewTicke
 
   const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log('Form Submitted:', data);
-    const newdata: fakedata = {id: 48475, name: data.ticketName, type: data.ticketType, details: data.description, date: "2024-11-24", status: "Open"}
-    setTicket([newdata, ...fakedata])
+    const newdata = {clientID: "3123", clientFullName: "Ryan Le", clientEmail: "ryan.le@yorku.com", ticketDate: new Date().toISOString(), ticketSubject: data.ticketName, type: data.ticketType, ticketDescription: data.description, ticketType: data.ticketType}
+    try {
+      const response = await axios.post("https://localhost:8080/tickets/", newdata)
+      
+      if (response.status === 200) {
+        window.location.reload();
+      }
+    } catch(err) {
+      console.log(err)
+    }
+    // setTicket([newdata, ...fakedata])
     handleClose();
   };
 
